@@ -1,0 +1,5 @@
+/*.xlsx
+/.idea
+/dataset/distance_matrix
+**/__pycache__/
+test.py
