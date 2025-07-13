@@ -8,7 +8,7 @@ import numpy as np
 class Agent:
     """Represents a single agent in the BFOA, corresponding to one solution."""
 
-    def __init__(self, agent_length, fitness_function, list_poi, is_maximizing=True):
+    def __init__(self, agent_length, fitness_function, is_maximizing=True):
         self.agent_length = agent_length
         self.fitness_function = fitness_function
         self.is_maximizing = is_maximizing
@@ -115,25 +115,6 @@ class Agent:
         if best_vector is not None:
             self.vector = best_vector
             self.fitness_value = best_fitness
-    # if len(self.vector) <= 2:
-        #     return
-        #
-        # n = len(self.vector)
-        # remove_idx = random.randint(0, n - 1)
-        # city = self.vector.pop(remove_idx)
-        #
-        # best_position = 0
-        # best_fitness = float('inf')
-        #
-        # for i in range(n):
-        #     candidate_tour = self.vector[:i] + [city] + self.vector[i:]
-        #     candidate_fitness = self.fitness_function(candidate_tour)
-        #     if candidate_fitness < best_fitness:
-        #         best_fitness = candidate_fitness
-        #         best_position = i
-        #
-        # self.vector = self.vector[:best_position] + [city] + self.vector[best_position:]
-        # self.fitness_value = best_fitness
 
 
 class SquadMode(Enum):
@@ -169,14 +150,13 @@ class BFOA(Algorithm):
     This class is designed with an interface compatible with the WOA class.
     """
 
-    def __init__(self, dataset_name, population_size=10, max_iterations=10, b=1.0):
+    def __init__(self, dataset_name, population_size=10, max_iterations=2, b=1.0):
         super().__init__(dataset_name)
         if population_size < 10 or population_size % 2 != 0:
             raise ValueError("Population size must be an even number and at least 10 for BFOA.")
 
         self.max_iterations = max_iterations
         self.n_plane = population_size // 2  # Agents per squad
-        self.list_poi = list(range(1, self.city_count + 1))
         self.is_maximizing = False  # For TSP, we minimize distance
 
         self.phase_1_max_iter = 2  # Initial exploration phase
@@ -200,8 +180,8 @@ class BFOA(Algorithm):
         """Executes the Battlefield Optimization Algorithm."""
         # Phase 1: Initialization and Reconnaissance
         for _ in range(self.n_plane):
-            self.squad1.air_forces.append(Agent(self.city_count, self.fitness_function, self.list_poi, self.is_maximizing))
-            self.squad2.air_forces.append(Agent(self.city_count, self.fitness_function, self.list_poi, self.is_maximizing))
+            self.squad1.air_forces.append(Agent(self.city_count, self.fitness_function, self.is_maximizing))
+            self.squad2.air_forces.append(Agent(self.city_count, self.fitness_function, self.is_maximizing))
 
         for _ in range(self.phase_1_max_iter):
             for agent in self.squad1.air_forces + self.squad2.air_forces:
